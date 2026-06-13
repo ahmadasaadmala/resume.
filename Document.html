@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<!DOCTYPE html>
+<html lang="ckb">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>گەلەری وێنە - گەلەری گەورە و پیشەکی</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            padding: 20px 30px 40px 30px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(120deg, #2c3e50, #3498db, #2980b9);
+            margin: -20px -30px 30px -30px;
+            color: white;
+            border-radius: 0 0 50px 50px;
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .stats {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 18px;
+            border-radius: 50px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 35px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 60px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .search-box input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            color: #2c3e50;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .filter-btn:hover:not(.active) {
+            background: #ecf0f1;
+            transform: translateY(-2px);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 10px;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            position: relative;
+            animation: fadeInUp 0.5s ease backwards;
+        }
+
+        .image-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .image-wrapper {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .image-card:hover .image-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .card-info {
+            padding: 18px;
+        }
+
+        .card-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #2c3e50;
+        }
+
+        .card-info p {
+            color: #7f8c8d;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .category-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0,0,0,0.75);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 2;
+            letter-spacing: 0.5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+        }
+
+        .modal.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 85%;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            max-height: 85vh;
+            object-fit: contain;
+            display: block;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: white;
+            font-size: 2.5rem;
+            background: rgba(0,0,0,0.6);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #e74c3c;
+            transform: rotate(90deg);
+        }
+
+        .modal-caption {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            background: rgba(0,0,0,0.7);
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 40px;
+            margin-top: 20px;
+        }
+
+        .empty-message h3 {
+            font-size: 1.8rem;
+            color: #bdc3c7;
+        }
+
+        .image-counter {
+            text-align: left;
+            margin-bottom: 15px;
+            color: #7f8c8d;
+            font-weight: 500;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            color: #5a6e7c;
+            font-size: 0.85rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 15px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 30px;
+            }
+            .filter-buttons {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🖼️ گەلەری گەورەی وێنەکان</h1>
+        <p>کۆکرەوەی جوانترین وێنەکانی سروشت، شار، هونەر، گیانەوەران و زەریا</p>
+        <div class="stats" id="imageStats">٢٤ وێنە لە گەلەریەکەدا</div>
+    </div>
+
+    <div class="controls">
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 گەڕان بە ناو، وەسف یان پۆل...">
+        </div>
+        <div class="filter-buttons" id="filterButtons">
+            <button class="filter-btn active" data-filter="all">📌 هەموو</button>
+            <button class="filter-btn" data-filter="سروشت">🌿 سروشت</button>
+            <button class="filter-btn" data-filter="شار">🏙️ شار</button>
+            <button class="filter-btn" data-filter="هونەری">🎨 هونەری</button>
+            <button class="filter-btn" data-filter="گیانەوەران">🐾 گیانەوەران</button>
+            <button class="filter-btn" data-filter="زەریا">🌊 زەریا</button>
+        </div>
+    </div>
+
+    <div class="image-counter" id="resultCounter"></div>
+    <div id="galleryContainer" class="gallery"></div>
+
+    <footer>
+        © 2025 گەلەری وێنەی پیشەکی | زیاتر لە ٢٤ وێنەی جوان بۆ ڕازاندنەوەی لاپەڕەکەت
+    </footer>
+</div>
+
+<div id="imageModal" class="modal">
+    <div class="modal-close" id="modalCloseBtn">✖</div>
+    <div class="modal-content">
+        <img id="modalImage" src="" alt="وێنەی گەورە">
+        <div id="modalCaption" class="modal-caption"></div>
+    </div>
+</div>
+
+<script>
+    // داتای وێنەکان - بەکارهێنانی Pixabay API-like images کە هەمیشە کاردەکەن
+    // بۆ ئەوەی وێنەکان بەردەوام کاربکەن، لە Picsum و Cloudimage به کار دێنین
+    const imagesData = [
+        // سروشت - 8 وێنە
+        { id: 1, name: "شاخە بەفراوییەکانی ئەلپ", category: "سروشت", imageUrl: "https://picsum.photos/id/104/400/300", description: "دیمەنێکی سەرنجڕاکێشی شاخە بەفراوییەکان" },
+        { id: 2, name: "دارستانی باران", category: "سروشت", imageUrl: "https://picsum.photos/id/96/400/300", description: "دارستانێکی سەوز و پڕ لە ژیان" },
+        { id: 3, name: "ڕووباری ئارام", category: "سروشت", imageUrl: "https://picsum.photos/id/85/400/300", description: "ڕووبارێک لە ناو دیمەنێکی خەیاڵیدا" },
+        { id: 4, name: "خۆرئاوابوون لە بیابان", category: "سروشت", imageUrl: "https://picsum.photos/id/116/400/300", description: "جوانی خۆرئاوابوون لە ناو بیاباندا" },
+        { id: 5, name: "دیمەنی بەهار", category: "سروشت", imageUrl: "https://picsum.photos/id/15/400/300", description: "ڕەنگە جوانەکانی بەهار و گوڵەکان" },
+        { id: 6, name: "دارستانی سەوز", category: "سروشت", imageUrl: "https://picsum.photos/id/94/400/300", description: "دارستانێکی چڕ و سەوز" },
+        { id: 7, name: "شەلالمەکانی نەمسا", category: "سروشت", imageUrl: "https://picsum.photos/id/42/400/300", description: "شەلالێکی جوان لە ناو کێوەکاندا" },
+        { id: 8, name: "کانیاوی سەهۆڵی", category: "سروشت", imageUrl: "https://picsum.photos/id/101/400/300", description: "سەهۆڵەکانی باکوور" },
+        
+        // شار - 5 وێنە
+        { id: 9, name: "شاری دوبەی شەوانە", category: "شار", imageUrl: "https://picsum.photos/id/106/400/300", description: "برج خەلیفە و ڕوناکیەکانی دوبەی" },
+        { id: 10, name: "نیویۆرک سیتی", category: "شار", imageUrl: "https://picsum.photos/id/91/400/300", description: "شەقامەکانی نیویۆرک لە شەودا" },
+        { id: 11, name: "تۆکیۆ مۆدێرن", category: "شار", imageUrl: "https://picsum.photos/id/67/400/300", description: "تۆکیۆ، شاری ڕوناکیە دیجیتالیەکان" },
+        { id: 12, name: "پاریسی ڕۆمانسی", category: "شار", imageUrl: "https://picsum.photos/id/98/400/300", description: "برج ئیفل و جوانی پاریس" },
+        { id: 13, name: "لەندەن کلاسیک", category: "شار", imageUrl: "https://picsum.photos/id/77/400/300", description: "بیگ بێن و ڕووباری تایمز" },
+        
+        // هونەری - 4 وێنە
+        { id: 14, name: "تابلۆی ئابستڕاکت", category: "هونەری", imageUrl: "https://picsum.photos/id/23/400/300", description: "ڕەنگە خەیاڵی و هونەری مۆدێرن" },
+        { id: 15, name: "پەیکەری دێرین", category: "هونەری", imageUrl: "https://picsum.photos/id/37/400/300", description: "پەیکەرێکی کلاسیکی ڕۆمی" },
+        { id: 16, name: "گرافیتی ڕەنگاوڕەنگ", category: "هونەری", imageUrl: "https://picsum.photos/id/125/400/300", description: "هونەری شەقامی لە بەرلین" },
+        { id: 17, name: "کارێکی هونەری سەردەم", category: "هونەری", imageUrl: "https://picsum.photos/id/131/400/300", description: "هونەری هاوچەرخ لە گەلەریەکدا" },
+        
+        // گیانەوەران - 5 وێنە
+        { id: 18, name: "شێری دڕنده", category: "گیانەوەران", imageUrl: "https://picsum.photos/id/133/400/300", description: "شێر لە ناوەڕاستی ساڤانادا" },
+        { id: 19, name: "پلنگی خۆڕسک", category: "گیانەوەران", imageUrl: "https://picsum.photos/id/141/400/300", description: "پلنگێک لە دارستانێکی ئەستووردا" },
+        { id: 20, name: "پەپولە جوانەکان", category: "گیانەوەران", imageUrl: "https://picsum.photos/id/59/400/300", description: "پەپولەیەک لەسەر گوڵێکی بەهاریدا" },
+        { id: 21, name: "مێرووی ڕەنگین", category: "گیانەوەران", imageUrl: "https://picsum.photos/id/127/400/300", description: "باڵندەیەکی بچووک لە نزیک گوڵدا" },
+        { id: 22, name: "هەڵۆی ئاسمان", category: "گیانەوەران", imageUrl: "https://picsum.photos/id/128/400/300", description: "هەڵۆیەک لە ئاسمانی شاخەکاندا" },
+        
+        // زەریا - 2 وێنە
+        { id: 23, name: "زەریای شین", category: "زەریا", imageUrl: "https://picsum.photos/id/124/400/300", description: "شەپۆلەکانی زەریا لە کاتی خۆرئاوابووندا" },
+        { id: 24, name: "مەرجانە ڕەنگاوڕەنگەکان", category: "زەریا", imageUrl: "https://picsum.photos/id/99/400/300", description: "قەراغ مەرجان لە قوڵایی زەریادا" }
+    ];
+
+    const galleryContainer = document.getElementById('galleryContainer');
+    const searchInput = document.getElementById('searchInput');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+    const modalCloseBtn = document.getElementById('modalCloseBtn');
+    const resultCounter = document.getElementById('resultCounter');
+
+    let activeFilter = 'all';
+    let searchQuery = '';
+
+    function renderGallery() {
+        let filteredImages = imagesData.filter(image => {
+            const matchesFilter = activeFilter === 'all' || image.category === activeFilter;
+            const query = searchQuery.trim().toLowerCase();
+            const matchesSearch = query === '' || 
+                image.name.toLowerCase().includes(query) || 
+                image.description.toLowerCase().includes(query) ||
+                image.category.toLowerCase().includes(query);
+            return matchesFilter && matchesSearch;
+        });
+
+        // نیشاندانی ژمارەی ئەنجامەکان
+        if (searchQuery.trim() !== '' || activeFilter !== 'all') {
+            resultCounter.innerHTML = `✨ ${filteredImages.length} وێنە دۆزرایەوە لە کۆی ${imagesData.length} وێنە`;
+        } else {
+            resultCounter.innerHTML = `📸 ${imagesData.length} وێنە لە گەلەریەکەدا`;
+        }
+
+        if (filteredImages.length === 0) {
+            galleryContainer.innerHTML = `<div class="empty-message"><h3>😢 هیچ وێنەیەک نەدۆزرایەوە</h3><p>تکایە هەوڵی گەڕانێکی تر بدەرەوە یان فیلتەرەکە بگۆڕە</p></div>`;
+            return;
+        }
+
+        galleryContainer.innerHTML = filteredImages.map((img, idx) => {
+            return `
+                <div class="image-card" data-id="${img.id}" style="animation-delay: ${idx * 0.02}s">
+                    <div class="category-badge">🏷️ ${img.category}</div>
+                    <div class="image-wrapper">
+                        <img src="${img.imageUrl}" alt="${img.name}" loading="lazy">
+                    </div>
+                    <div class="card-info">
+                        <h3>${escapeHtml(img.name)}</h3>
+                        <p>📂 ${img.category} &nbsp;| 📝 ${escapeHtml(img.description.substring(0, 50))}${img.description.length > 50 ? '...' : ''}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        document.querySelectorAll('.image-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const id = parseInt(card.getAttribute('data-id'));
+                const imageObj = imagesData.find(img => img.id === id);
+                if (imageObj) {
+                    openModal(imageObj);
+                }
+            });
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    function openModal(image) {
+        modalImage.src = image.imageUrl;
+        modalImage.alt = image.name;
+        modalCaption.textContent = `${image.name} • ${image.description} (پۆل: ${image.category})`;
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    searchInput.addEventListener('input', (e) => {
+        searchQuery = e.target.value;
+        renderGallery();
+    });
+
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activeFilter = btn.getAttribute('data-filter');
+            renderGallery();
+        });
+    });
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    // زیادکردنی وێنەی زیاتر بە شێوەی پشتگیر
+    console.log("گەلەری وێنەکان بە سەرکەوتوویی بارکرا! ژمارەی وێنەکان: " + imagesData.length);
+    renderGallery();
+</script>
+</body>
+</html>
+    
+</body>
+</html>
